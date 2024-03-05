@@ -6,7 +6,9 @@ import { Endpoint, S3 } from 'aws-sdk';
 
 import { FilesEntity } from './files.entity';
 
-import { IS3PresignedPostResponse } from './dto/files.interface';
+import { NewFileDto } from './dto/newFile.dto';
+
+import { IS3PresignedPostResponse } from './files.interface';
 
 @Injectable()
 export class FilesService {
@@ -48,5 +50,10 @@ export class FilesService {
     });
 
     return result as unknown as IS3PresignedPostResponse;
+  }
+
+  async create(file: NewFileDto, userId: number): Promise<FilesEntity> {
+    const newFile = { ...file, userId };
+    return this.filesRepository.save(newFile);
   }
 }
