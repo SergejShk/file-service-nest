@@ -1,6 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, IsNull, Repository } from 'typeorm';
+
 import { FolderEntity } from './folders.entity';
 
 import { CreateFolderDto } from './dto/createFolder.dto';
@@ -60,5 +65,32 @@ export class FoldersService {
       .execute();
 
     return updatedFolder.raw[0];
+  }
+
+  async updateEditors(id: number, editorsIds: number[]): Promise<FolderEntity> {
+    const updatedFolder = await this.foldersRepository
+      .createQueryBuilder()
+      .update(FolderEntity)
+      .set({
+        editorsIds,
+      })
+      .where('id = :id', { id })
+      .returning('*')
+      .execute();
+
+    return updatedFolder.raw[0];
+  }
+
+  async deleteFolder(userId: number, id: number): Promise<void> {
+    const folder = await this.foldersRepository.findOneBy({ id });
+
+    if (!folder) {
+      throw new NotFoundException(`Folder with id ${id} not found`);
+    }
+    if (folder.userId !== userId) {
+      throw new ForbiddenException(`User does not owns folder`);
+    }
+
+    await this.foldersRepository.remove(folder);
   }
 }

@@ -16,7 +16,7 @@ import { BaseResponse, okResponse } from 'src/shared/api/baseResponses';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Get()
+  @Get('all')
   @UseGuards(AuthGuard)
   @HttpCode(200)
   @ApiUnauthorizedResponse({ description: 'Auth failed' })

@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+
 import { FolderEntity } from '../folders/folders.entity';
 
 @Entity('users')

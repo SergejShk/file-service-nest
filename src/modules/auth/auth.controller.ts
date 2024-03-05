@@ -25,6 +25,7 @@ import { SignUpDto } from './dto/signup.dto';
 import { AuthGuard } from 'src/shared/guards/auth.guard';
 import { DUser } from 'src/shared/decorators/user.decorator';
 import { BaseResponse, okResponse } from 'src/shared/api/baseResponses';
+
 import { IUser } from '../users/users.interface';
 
 @Controller('auth')
