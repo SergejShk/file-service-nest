@@ -1,21 +1,18 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  OneToMany,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 
 import { UserEntity } from '../users/user.entity';
-import { FilesEntity } from '../files/files.entity';
+import { FolderEntity } from '../folders/folders.entity';
 
-@Entity('folders')
-export class FolderEntity {
+@Entity('files')
+export class FilesEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
   name: string;
+
+  @Column()
+  key: string;
 
   @Column()
   isPublic: boolean;
@@ -24,14 +21,14 @@ export class FolderEntity {
   editorsIds: number[];
 
   @Column({ nullable: true })
-  parentId: number;
+  folderId: number;
+
+  @ManyToOne(() => FolderEntity, (folder) => folder.id)
+  folder: FolderEntity;
 
   @Column()
   userId: number;
 
   @ManyToOne(() => UserEntity, (user) => user.id)
   user: UserEntity;
-
-  @OneToMany(() => FilesEntity, (files) => files.folderId)
-  files: FilesEntity[];
 }

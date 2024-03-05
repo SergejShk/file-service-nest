@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
 import { FolderEntity } from '../folders/folders.entity';
+import { FilesEntity } from '../files/files.entity';
 
 @Entity('users')
 export class UserEntity {
@@ -14,5 +15,8 @@ export class UserEntity {
   password: string;
 
   @OneToMany(() => FolderEntity, (folders) => folders.userId)
-  photos: FolderEntity[];
+  folders: FolderEntity[];
+
+  @OneToMany(() => FilesEntity, (files) => files.userId)
+  files: FilesEntity[];
 }
