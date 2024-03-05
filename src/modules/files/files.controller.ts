@@ -1,4 +1,11 @@
-import { Body, Controller, HttpCode, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiOperation,
@@ -17,6 +24,7 @@ import { NewFileDto } from './dto/newFile.dto';
 
 import { IS3PresignedPostResponse } from './files.interface';
 import { IUser } from '../users/users.interface';
+import { FilesByFolderDto } from './dto/filesByFolder.dto';
 
 @Controller('files')
 export class FilesController {
@@ -50,6 +58,26 @@ export class FilesController {
     @Body() newFileDto: NewFileDto,
   ): Promise<BaseResponse<FilesEntity>> {
     const result = await this.filesService.create(newFileDto, user.id);
+
+    return okResponse(result);
+  }
+
+  @Post('list-by-folder/:id')
+  @HttpCode(200)
+  @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Get files by folder' })
+  @ApiUnauthorizedResponse({ description: 'Auth failed' })
+  @ApiBadRequestResponse({ description: 'Validation error' })
+  async getFilesByFolderId(
+    @DUser() user: IUser,
+    @Param('id') id: string,
+    @Body() filesByFolderDto: FilesByFolderDto,
+  ): Promise<BaseResponse<FilesEntity[]>> {
+    const result = await this.filesService.getListByFolderId(
+      user.id,
+      Number(id),
+      filesByFolderDto.name,
+    );
 
     return okResponse(result);
   }

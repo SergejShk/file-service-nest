@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
-import { Repository } from 'typeorm';
+import { ILike, IsNull, Repository } from 'typeorm';
 import { Endpoint, S3 } from 'aws-sdk';
 
 import { FilesEntity } from './files.entity';
@@ -55,5 +55,29 @@ export class FilesService {
   async create(file: NewFileDto, userId: number): Promise<FilesEntity> {
     const newFile = { ...file, userId };
     return this.filesRepository.save(newFile);
+  }
+
+  async getListByFolderId(userId: number, folderId: number, name: string) {
+    if (!folderId) {
+      return this.filesRepository.find({
+        where: [
+          { userId, folderId: IsNull(), name: ILike(`%${name}%`) },
+          { isPublic: true, folderId: IsNull(), name: ILike(`%${name}%`) },
+        ],
+        order: {
+          id: 'ASC',
+        },
+      });
+    }
+
+    return this.filesRepository.find({
+      where: [
+        { userId, folderId, name: ILike(`%${name}%`) },
+        { isPublic: true, folderId, name: ILike(`%${name}%`) },
+      ],
+      order: {
+        id: 'ASC',
+      },
+    });
   }
 }
