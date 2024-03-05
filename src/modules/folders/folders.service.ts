@@ -4,6 +4,7 @@ import { ILike, IsNull, Repository } from 'typeorm';
 import { FolderEntity } from './folders.entity';
 
 import { CreateFolderDto } from './dto/createFolder.dto';
+import { UpdateFolderDto } from './dto/updateFolder.dto';
 
 @Injectable()
 export class FoldersService {
@@ -44,5 +45,20 @@ export class FoldersService {
         id: 'ASC',
       },
     });
+  }
+
+  async update(id: number, folder: UpdateFolderDto): Promise<FolderEntity> {
+    const updatedFolder = await this.foldersRepository
+      .createQueryBuilder()
+      .update(FolderEntity)
+      .set({
+        name: folder.name,
+        isPublic: folder.isPublic,
+      })
+      .where('id = :id', { id })
+      .returning('*')
+      .execute();
+
+    return updatedFolder.raw[0];
   }
 }

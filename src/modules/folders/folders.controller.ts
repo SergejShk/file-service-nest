@@ -4,6 +4,7 @@ import {
   HttpCode,
   Param,
   Post,
+  Put,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBadRequestResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -18,6 +19,7 @@ import { BaseResponse, okResponse } from 'src/shared/api/baseResponses';
 import { DUser } from 'src/shared/decorators/user.decorator';
 import { AuthGuard } from 'src/shared/guards/auth.guard';
 import { IUser } from '../users/users.interface';
+import { UpdateFolderDto } from './dto/updateFolder.dto';
 
 @Controller('folders')
 @ApiTags('Folders')
@@ -55,6 +57,23 @@ export class FoldersController {
       user.id,
       Number(id),
       folderByParentIdDto.name,
+    );
+
+    return okResponse(folders);
+  }
+
+  @Put('update/:id')
+  @HttpCode(200)
+  @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Update folder by id' })
+  @ApiBadRequestResponse({ description: 'Validation error' })
+  async updateFolder(
+    @Param('id') id: string,
+    @Body() updateFolderDto: UpdateFolderDto,
+  ): Promise<BaseResponse<FolderEntity>> {
+    const folders = await this.foldersService.update(
+      Number(id),
+      updateFolderDto,
     );
 
     return okResponse(folders);
