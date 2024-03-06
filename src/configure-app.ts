@@ -1,7 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
-// import cors from 'cors';
 import * as helmet from 'helmet';
 
 import { initSwagger } from './shared/swagger.initializer';

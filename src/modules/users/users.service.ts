@@ -24,8 +24,12 @@ export class UsersService {
   }
 
   async createUser({ email, password }: ISignup): Promise<UserEntity> {
-    const passwordHash = await this.createPasswordHash(password);
-    return this.usersRepository.save({ email, password: passwordHash });
+    if (password) {
+      const passwordHash = await this.createPasswordHash(password);
+      return this.usersRepository.save({ email, password: passwordHash });
+    }
+
+    return this.usersRepository.save({ email });
   }
 
   async updatePassword(id: number, password: string): Promise<UserEntity> {

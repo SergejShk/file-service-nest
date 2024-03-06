@@ -17,6 +17,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { ConfigService } from '@nestjs/config';
 import { CookieOptions, Request, Response } from 'express';
 import axios from 'axios';
 
@@ -28,7 +29,6 @@ import { DUser } from 'src/shared/decorators/user.decorator';
 import { BaseResponse, okResponse } from 'src/shared/api/baseResponses';
 
 import { IUser } from '../users/users.interface';
-import { ConfigService } from '@nestjs/config';
 
 @Controller('auth')
 @ApiTags('Auth')
