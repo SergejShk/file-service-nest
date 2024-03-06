@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   Param,
@@ -10,7 +11,10 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiForbiddenResponse,
   ApiOperation,
+  ApiNoContentResponse,
+  ApiNotFoundResponse,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -24,12 +28,12 @@ import { DUser } from 'src/shared/decorators/user.decorator';
 
 import { CreatePresignedLinkDto } from './dto/createPresignedLink.dto';
 import { NewFileDto } from './dto/newFile.dto';
-
-import { IS3PresignedPostResponse } from './dto/files.interface';
-import { IUser } from '../users/users.interface';
 import { FilesByFolderDto } from './dto/filesByFolder.dto';
 import { UpdateFileDto } from './dto/updateFile.dto';
 import { UpdateFileEditorsDto } from './dto/updateFileEditors.dto';
+
+import { IS3PresignedPostResponse } from './files.interface';
+import { IUser } from '../users/users.interface';
 
 @Controller('files')
 @ApiTags('Files')
@@ -134,5 +138,21 @@ export class FilesController {
     );
 
     return okResponse(updatedFile);
+  }
+
+  @Delete(':id')
+  @UseGuards(AuthGuard)
+  @HttpCode(204)
+  @ApiOperation({ summary: 'Remove file' })
+  @ApiBadRequestResponse({ description: 'Validation error' })
+  @ApiUnauthorizedResponse({ description: 'Auth failed' })
+  @ApiNotFoundResponse({ description: 'File not found' })
+  @ApiForbiddenResponse({ description: 'User does not owns file' })
+  @ApiNoContentResponse({ description: 'File deleted' })
+  async deleteFile(
+    @DUser() user: IUser,
+    @Param('id') id: string,
+  ): Promise<void> {
+    return await this.filesService.deleteFile(user.id, Number(id));
   }
 }

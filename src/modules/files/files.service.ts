@@ -1,14 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
 import { ILike, IsNull, Repository } from 'typeorm';
-import { Endpoint, S3 } from 'aws-sdk';
+import { AWSError, Endpoint, S3 } from 'aws-sdk';
 
 import { FilesEntity } from './files.entity';
 
 import { NewFileDto } from './dto/newFile.dto';
 
-import { IS3PresignedPostResponse } from './dto/files.interface';
+import { IS3PresignedPostResponse } from './files.interface';
 import { UpdateFileDto } from './dto/updateFile.dto';
 
 @Injectable()
@@ -113,5 +117,39 @@ export class FilesService {
       .execute();
 
     return updatedFile.raw[0];
+  }
+
+  private async deleteObject(key: string): Promise<boolean> {
+    return new Promise(
+      (resolve: (val: boolean) => void, reject: (val: AWSError) => void) => {
+        this.S3.deleteObject(
+          {
+            Bucket: this.bucketName,
+            Key: key,
+          },
+          (err: AWSError) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(true);
+            }
+          },
+        );
+      },
+    );
+  }
+
+  async deleteFile(userId: number, id: number): Promise<void> {
+    const file = await this.filesRepository.findOneBy({ id });
+
+    if (!file) {
+      throw new NotFoundException(`File with id ${id} not found`);
+    }
+    if (file.userId !== userId) {
+      throw new ForbiddenException(`User does not owns file`);
+    }
+
+    await this.filesRepository.remove(file);
+    await this.deleteObject(file.key);
   }
 }
