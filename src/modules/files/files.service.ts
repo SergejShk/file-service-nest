@@ -9,6 +9,7 @@ import { FilesEntity } from './files.entity';
 import { NewFileDto } from './dto/newFile.dto';
 
 import { IS3PresignedPostResponse } from './dto/files.interface';
+import { UpdateFileDto } from './dto/updateFile.dto';
 
 @Injectable()
 export class FilesService {
@@ -83,5 +84,20 @@ export class FilesService {
 
   getObject(key: string): string {
     return encodeURI(`https://${this.bucketName}.s3.amazonaws.com/${key}`);
+  }
+
+  async update(file: UpdateFileDto, id: number): Promise<FilesEntity> {
+    const updatedFile = await this.filesRepository
+      .createQueryBuilder()
+      .update(FilesEntity)
+      .set({
+        name: file.name,
+        isPublic: file.isPublic,
+      })
+      .where('id = :id', { id })
+      .returning('*')
+      .execute();
+
+    return updatedFile.raw[0];
   }
 }

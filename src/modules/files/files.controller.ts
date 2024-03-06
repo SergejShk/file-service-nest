@@ -5,6 +5,7 @@ import {
   HttpCode,
   Param,
   Post,
+  Put,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -27,6 +28,7 @@ import { NewFileDto } from './dto/newFile.dto';
 import { IS3PresignedPostResponse } from './dto/files.interface';
 import { IUser } from '../users/users.interface';
 import { FilesByFolderDto } from './dto/filesByFolder.dto';
+import { UpdateFileDto } from './dto/updateFile.dto';
 
 @Controller('files')
 @ApiTags('Files')
@@ -95,5 +97,23 @@ export class FilesController {
     const link = this.filesService.getObject(key);
 
     return okResponse(link);
+  }
+
+  @Put('update/:id')
+  @HttpCode(200)
+  @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Update file by id' })
+  @ApiUnauthorizedResponse({ description: 'Auth failed' })
+  @ApiBadRequestResponse({ description: 'Validation error' })
+  async update(
+    @Param('id') id: string,
+    @Body() updateFileDto: UpdateFileDto,
+  ): Promise<BaseResponse<FilesEntity>> {
+    const updatedFile = await this.filesService.update(
+      updateFileDto,
+      Number(id),
+    );
+
+    return okResponse(updatedFile);
   }
 }
