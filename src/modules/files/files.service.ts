@@ -152,4 +152,19 @@ export class FilesService {
     await this.filesRepository.remove(file);
     await this.deleteObject(file.key);
   }
+
+  async deleteManyByFolderId(userId: number, folderId: number): Promise<void> {
+    const files = await this.getListByFolderId(userId, folderId, '');
+
+    await this.filesRepository
+      .createQueryBuilder()
+      .delete()
+      .from(FilesEntity)
+      .where('folderId = :folderId', { folderId })
+      .execute();
+
+    await Promise.all(
+      files.map(async (file) => await this.deleteObject(file.key)),
+    );
+  }
 }

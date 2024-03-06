@@ -111,7 +111,7 @@ export class FoldersController {
     return okResponse(folders);
   }
 
-  @Delete('delete/:id')
+  @Delete(':id')
   @UseGuards(AuthGuard)
   @HttpCode(204)
   @ApiOperation({ summary: 'Remove folder' })

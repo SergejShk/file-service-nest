@@ -11,5 +11,6 @@ import { UsersModule } from '../users/users.module';
   imports: [TypeOrmModule.forFeature([FilesEntity]), UsersModule],
   controllers: [FilesController],
   providers: [FilesService],
+  exports: [FilesService],
 })
 export class FilesModule {}

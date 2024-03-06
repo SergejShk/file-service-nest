@@ -8,12 +8,15 @@ import { ILike, IsNull, Repository } from 'typeorm';
 
 import { FolderEntity } from './folders.entity';
 
+import { FilesService } from '../files/files.service';
+
 import { CreateFolderDto } from './dto/createFolder.dto';
 import { UpdateFolderDto } from './dto/updateFolder.dto';
 
 @Injectable()
 export class FoldersService {
   constructor(
+    private filesService: FilesService,
     @InjectRepository(FolderEntity)
     private foldersRepository: Repository<FolderEntity>,
   ) {}
@@ -91,6 +94,7 @@ export class FoldersService {
       throw new ForbiddenException(`User does not owns folder`);
     }
 
+    await this.filesService.deleteManyByFolderId(userId, id);
     await this.foldersRepository.remove(folder);
   }
 }
