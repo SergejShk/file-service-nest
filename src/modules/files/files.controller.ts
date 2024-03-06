@@ -29,6 +29,7 @@ import { IS3PresignedPostResponse } from './dto/files.interface';
 import { IUser } from '../users/users.interface';
 import { FilesByFolderDto } from './dto/filesByFolder.dto';
 import { UpdateFileDto } from './dto/updateFile.dto';
+import { UpdateFileEditorsDto } from './dto/updateFileEditors.dto';
 
 @Controller('files')
 @ApiTags('Files')
@@ -112,6 +113,24 @@ export class FilesController {
     const updatedFile = await this.filesService.update(
       updateFileDto,
       Number(id),
+    );
+
+    return okResponse(updatedFile);
+  }
+
+  @Put('update-editors/:id')
+  @HttpCode(200)
+  @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Update editors of file by id' })
+  @ApiUnauthorizedResponse({ description: 'Auth failed' })
+  @ApiBadRequestResponse({ description: 'Validation error' })
+  async updateEditors(
+    @Param('id') id: string,
+    @Body() updateFileEditorsDto: UpdateFileEditorsDto,
+  ): Promise<BaseResponse<FilesEntity>> {
+    const updatedFile = await this.filesService.updateEditors(
+      Number(id),
+      updateFileEditorsDto.editorsIds,
     );
 
     return okResponse(updatedFile);

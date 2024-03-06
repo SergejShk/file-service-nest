@@ -100,4 +100,18 @@ export class FilesService {
 
     return updatedFile.raw[0];
   }
+
+  async updateEditors(id: number, editorsIds: number[]): Promise<FilesEntity> {
+    const updatedFile = await this.filesRepository
+      .createQueryBuilder()
+      .update(FilesEntity)
+      .set({
+        editorsIds,
+      })
+      .where('id = :id', { id })
+      .returning('*')
+      .execute();
+
+    return updatedFile.raw[0];
+  }
 }
