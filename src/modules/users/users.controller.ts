@@ -20,7 +20,7 @@ export class UsersController {
   @UseGuards(AuthGuard)
   @HttpCode(200)
   @ApiUnauthorizedResponse({ description: 'Auth failed' })
-  @ApiOperation({ summary: 'Get all user' })
+  @ApiOperation({ summary: 'Get all users' })
   async getUsers(): Promise<BaseResponse<UserEntity[]>> {
     const users = await this.usersService.getAll();
 

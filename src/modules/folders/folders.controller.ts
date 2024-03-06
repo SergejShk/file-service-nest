@@ -40,7 +40,7 @@ export class FoldersController {
   @Post('new')
   @HttpCode(201)
   @UseGuards(AuthGuard)
-  @ApiOperation({ summary: 'Create new folder' })
+  @ApiOperation({ summary: 'Create folder' })
   @ApiUnauthorizedResponse({ description: 'Auth failed' })
   @ApiBadRequestResponse({ description: 'Validation error' })
   async createFolder(

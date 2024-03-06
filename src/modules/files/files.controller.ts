@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   Param,
   Post,
@@ -9,6 +10,7 @@ import {
 import {
   ApiBadRequestResponse,
   ApiOperation,
+  ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
@@ -22,11 +24,12 @@ import { DUser } from 'src/shared/decorators/user.decorator';
 import { CreatePresignedLinkDto } from './dto/createPresignedLink.dto';
 import { NewFileDto } from './dto/newFile.dto';
 
-import { IS3PresignedPostResponse } from './files.interface';
+import { IS3PresignedPostResponse } from './dto/files.interface';
 import { IUser } from '../users/users.interface';
 import { FilesByFolderDto } from './dto/filesByFolder.dto';
 
 @Controller('files')
+@ApiTags('Files')
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}
 
@@ -48,7 +51,7 @@ export class FilesController {
   }
 
   @Post('new')
-  @HttpCode(200)
+  @HttpCode(201)
   @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Create file' })
   @ApiUnauthorizedResponse({ description: 'Auth failed' })
@@ -80,5 +83,17 @@ export class FilesController {
     );
 
     return okResponse(result);
+  }
+
+  @Get(':key')
+  @HttpCode(200)
+  @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Get a link to get the file' })
+  @ApiUnauthorizedResponse({ description: 'Auth failed' })
+  @ApiBadRequestResponse({ description: 'Validation error' })
+  getObject(@Param('key') key: string): BaseResponse<string> {
+    const link = this.filesService.getObject(key);
+
+    return okResponse(link);
   }
 }

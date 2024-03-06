@@ -35,7 +35,7 @@ export class AuthController {
 
   @Post('sign-up')
   @HttpCode(201)
-  @ApiOperation({ summary: 'Sign up new user' })
+  @ApiOperation({ summary: 'User registration' })
   @ApiBadRequestResponse({ description: 'Validation error' })
   @ApiConflictResponse({ description: 'User with such email already exists' })
   async signUp(
@@ -51,7 +51,7 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(200)
-  @ApiOperation({ summary: 'Login user' })
+  @ApiOperation({ summary: 'User login' })
   @ApiBadRequestResponse({ description: 'Validation error' })
   async logIn(
     @Body() signUpDto: SignUpDto,
@@ -97,7 +97,7 @@ export class AuthController {
   @Get('logout')
   @HttpCode(200)
   @UseGuards(AuthGuard)
-  @ApiOperation({ summary: 'Log out user' })
+  @ApiOperation({ summary: 'User logout' })
   async logOut(
     @Res({ passthrough: true }) res: Response,
   ): Promise<BaseResponse<boolean>> {

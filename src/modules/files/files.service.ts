@@ -8,7 +8,7 @@ import { FilesEntity } from './files.entity';
 
 import { NewFileDto } from './dto/newFile.dto';
 
-import { IS3PresignedPostResponse } from './files.interface';
+import { IS3PresignedPostResponse } from './dto/files.interface';
 
 @Injectable()
 export class FilesService {
@@ -79,5 +79,9 @@ export class FilesService {
         id: 'ASC',
       },
     });
+  }
+
+  getObject(key: string): string {
+    return encodeURI(`https://${this.bucketName}.s3.amazonaws.com/${key}`);
   }
 }
