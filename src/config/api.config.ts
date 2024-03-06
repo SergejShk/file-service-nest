@@ -21,6 +21,12 @@ export const apiConfig = registerAs('api', () => {
       default: null,
       env: 'FE_BASE_URL',
     },
+    baseUrl: {
+      doc: 'Back-end origin',
+      format: String,
+      default: null,
+      env: 'BASE_URL',
+    },
   })
     .validate()
     .getProperties();

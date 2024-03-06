@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import * as bcryptjs from 'bcryptjs';
 
 import { UserEntity } from './user.entity';
-import { SignUpDto } from '../auth/dto/signup.dto';
+import { ISignup } from './users.interface';
 
 @Injectable()
 export class UsersService {
@@ -23,9 +23,25 @@ export class UsersService {
     return this.usersRepository.findOneBy({ email });
   }
 
-  async createUser({ email, password }: SignUpDto): Promise<UserEntity> {
+  async createUser({ email, password }: ISignup): Promise<UserEntity> {
     const passwordHash = await this.createPasswordHash(password);
     return this.usersRepository.save({ email, password: passwordHash });
+  }
+
+  async updatePassword(id: number, password: string): Promise<UserEntity> {
+    const passwordHash = await this.createPasswordHash(password);
+
+    const updatedUser = await this.usersRepository
+      .createQueryBuilder()
+      .update(UserEntity)
+      .set({
+        password: passwordHash,
+      })
+      .where('id = :id', { id })
+      .returning('*')
+      .execute();
+
+    return updatedUser.raw[0];
   }
 
   private async createPasswordHash(password: string): Promise<string> {

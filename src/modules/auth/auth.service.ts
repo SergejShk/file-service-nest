@@ -35,6 +35,21 @@ export class AuthService {
       throw new ConflictException(`User with email ${email} already exists`);
     }
 
+    if (user) {
+      const response = await this.usersService.updatePassword(
+        user.id,
+        signUpDto.password,
+      );
+      const payloadToken = {
+        id: response.id,
+        email: response.email,
+      };
+
+      const accessToken = this.getToken(payloadToken, Token.Access);
+      const refreshToken = this.getToken(payloadToken, Token.Refresh);
+      return { ...payloadToken, accessToken, refreshToken };
+    }
+
     const newUser = await this.usersService.createUser(signUpDto);
     const payloadToken = {
       id: newUser.id,
@@ -68,6 +83,36 @@ export class AuthService {
       id: user.id,
       email: user.email,
     };
+    const accessToken = this.getToken(payloadToken, Token.Access);
+    const refreshToken = this.getToken(payloadToken, Token.Refresh);
+
+    return { ...payloadToken, accessToken, refreshToken };
+  }
+
+  async googleLogIn(email: string) {
+    const user = await this.usersService.findByEmail(email);
+
+    if (user) {
+      const payloadToken = {
+        id: user.id,
+        email: user.email,
+      };
+
+      const accessToken = this.getToken(payloadToken, Token.Access);
+      const refreshToken = this.getToken(payloadToken, Token.Refresh);
+
+      return { ...payloadToken, accessToken, refreshToken };
+    }
+
+    const response = await this.usersService.createUser({
+      email,
+    });
+
+    const payloadToken = {
+      id: response.id,
+      email: response.email,
+    };
+
     const accessToken = this.getToken(payloadToken, Token.Access);
     const refreshToken = this.getToken(payloadToken, Token.Refresh);
 
